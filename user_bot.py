@@ -16,7 +16,6 @@ logger = logging.getLogger(__name__)
 load_dotenv(dotenv_path='.env')
 api_id = os.getenv('api_id')
 api_hash = os.getenv('api_hash')
-phone = '+79961272158'
 
 # Загрузка пользователей из JSON-файла
 with open("users.json", "r") as read_file:
@@ -65,5 +64,7 @@ async def main():
             await send_message_to_user(phone_number, message)
 
 if __name__ == '__main__':
-    # Запуск цикла событий
+    # Запуск клиента Telegram с указанным номером телефона
+    client.start(phone=os.getenv('phone'))
+    # Запуск основной функции
     client.loop.run_until_complete(main())
