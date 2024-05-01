@@ -6,7 +6,7 @@ from dotenv import load_dotenv
 from telethon import TelegramClient
 from telethon.tl.functions.contacts import ImportContactsRequest
 from telethon.tl.types import InputPhoneContact
-from telethon.errors import PeerFloodError
+from telethon.errors import PeerFloodError, FloodWaitError
 
 # Настройка логирования
 logging.basicConfig(level=logging.INFO)
@@ -25,12 +25,12 @@ with open("users.json", "r") as read_file:
 client = TelegramClient("mailing", api_id, api_hash)
 
 # Текст сообщения
-message = '''
-Чайной Истории уже скоро 10 ЛЕТ🔥
+message = ''' 
+Чайной Истории уже скоро 10 ЛЕТ 🔥
 
 Мы уже поделились на своем канале новостями об акциях и предстоящих мероприятиях.
 
-Присоединяйся к чайному коммьюнити, чтобы не пропустить самых вкусных пиал!🍵 
+Присоединяйся к чайному коммьюнити, чтобы не пропустить самых вкусных пиал! 🍵 
 
 ➡️ https://t.me/chaystory ⬅️
 '''
@@ -55,7 +55,11 @@ async def send_message_to_user(phone_number, message):
         except PeerFloodError as e:
             logger.error(f"Возникла ошибка PeerFloodError: {e}. Приостановка отправки сообщений на некоторое время.")
             logger.info(f"Повторная попытка отправки сообщения на {phone_number} через некоторое время.")
-            time.sleep(100)  # Пауза перед следующей попыткой
+            time.sleep(1)  # Пауза перед следующей попыткой
+        except FloodWaitError as e:
+            logger.error(f"Возникла ошибка FloodWaitError: {e}. Пауза на {e.seconds} секунд перед повторной попыткой.")
+            time.sleep(e.seconds + 1)  # Добавляем 1 секунду к времени ожидания перед следующей попыткой
+
 
 # Основная функция
 async def main():
