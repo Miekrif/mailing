@@ -1,7 +1,7 @@
 from telethon import TelegramClient, sync
 from telethon.tl.functions.contacts import ImportContactsRequest
 from telethon.tl.types import InputPhoneContact
-from telethon.errors import PeerFloodError
+from telethon.errors import PeerFloodError, FloodWaitError
 import os
 import logging
 from dotenv import load_dotenv
@@ -29,11 +29,11 @@ users_v2 = {
 
 
 message = '''
-Чайной Истории уже скоро 10 ЛЕТ🔥
+Чайной Истории уже скоро 10 ЛЕТ 🔥
 
 Мы уже поделились на своем канале новостями об акциях и предстоящих мероприятиях.
 
-Присоединяйся к чайному коммьюнити, чтобы не пропустить самых вкусных пиал!🍵 
+Присоединяйся к чайному коммьюнити, чтобы не пропустить самых вкусных пиал! 🍵 
 
 ➡️ https://t.me/chaystory ⬅️
 '''
@@ -73,6 +73,9 @@ def send_message_to_user(phone_number, message):
     except PeerFloodError as e:
         logger.error(f"Encountered PeerFloodError: {e}. Pausing message sending for a while.")
         time.sleep(100)
+    except FloodWaitError as e:
+        logger.error(f"Возникла ошибка FloodWaitError: {e}. Пауза на {e.seconds} секунд перед повторной попыткой.")
+        time.sleep(e.seconds + 1)  # Добавляем 1 секунду к времени ожидания перед следующей попыткой
 
 
 # Пример использования
