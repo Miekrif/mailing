@@ -17,13 +17,6 @@ load_dotenv(dotenv_path='.env')
 api_id = os.getenv('api_id')
 api_hash = os.getenv('api_hash')
 
-# Загрузка пользователей из JSON-файла
-with open("old.numbers.json", "r") as old_file:
-    users_old = json.load(old_file)
-
-with open("new_file.json", "r") as read_file:
-    users = json.load(read_file)
-
 
 # Инициализация клиента Telegram
 client = TelegramClient("mailing", api_id, api_hash)
@@ -77,7 +70,7 @@ def write_new_old_numbers(old_numbers):
         else: #list
             print('2')
             new_dict = {}
-            new_dict["users"] = dict.fromkeys(old_numbers , '')
+            new_dict["users"] = dict.fromkeys(old_numbers, '')
             old_numbers_update.write(json.dumps(new_dict))
         old_numbers_update.close()
     except Exception as e:
@@ -96,6 +89,12 @@ async def main():
 
 
 if __name__ == '__main__':
+    # Загрузка пользователей из JSON-файла
+    with open("old.numbers.json" , "r") as old_file:
+        users_old = json.load(old_file)
+
+    with open("new_file.json" , "r") as read_file:
+        users = json.load(read_file)
     # Запуск клиента Telegram с указанным номером телефона
     client.start(phone=os.getenv('phone'))
     # Запуск основной функции
