@@ -82,7 +82,7 @@ async def write_new_old_numbers(old_numbers):
 # Основная функция
 async def main():
     async with client:
-        for phone_number, individual_message in users.items():
+        for phone_number, individual_message in users.get('users', '').items():
             if phone_number in users_old.keys():
                 continue
             else:
