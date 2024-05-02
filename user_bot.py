@@ -64,10 +64,11 @@ async def send_message_to_user(phone_number, message):
 
 async def write_new_old_numbers(old_numbers):
     try:
-        old_numbers_update = open("old.numbers.json", "w")
         if isinstance(dict, old_numbers):
+            old_numbers_update = open("old.numbers.json" , "w")
             old_numbers_update.write(json.dumps(old_numbers))
         else: #list
+            old_numbers_update = open("old.numbers.json" , "w")
             print('2')
             new_dict = {}
             new_dict["users"] = dict.fromkeys(old_numbers, '')
