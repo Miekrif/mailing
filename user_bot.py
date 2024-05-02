@@ -18,19 +18,23 @@ api_id = os.getenv('api_id')
 api_hash = os.getenv('api_hash')
 
 # Загрузка пользователей из JSON-файла
-with open("users.json", "r") as read_file:
+with open("users.json", "r") as old_file:
+    users_old = json.load(old_file)
+
+with open("new_file.json", "r") as read_file:
     users = json.load(read_file)
+
 
 # Инициализация клиента Telegram
 client = TelegramClient("mailing", api_id, api_hash)
 
 # Текст сообщения
 message = ''' 
-Чайной Истории уже скоро 10 ЛЕТ 🔥
+Чайной Истории уже скоро 10 ЛЕТ
 
 Мы уже поделились на своем канале новостями об акциях и предстоящих мероприятиях.
 
-Присоединяйся к чайному коммьюнити, чтобы не пропустить самых вкусных пиал! 🍵 
+Присоединяйся к чайному коммьюнити, чтобы не пропустить самых вкусных пиал!
 
 ➡️ https://t.me/chaystory ⬅️
 '''
@@ -48,9 +52,11 @@ async def send_message_to_user(phone_number, message):
                 await client.send_message(user_id, message)
                 logger.info(f"Сообщение отправлено на {phone_number}")
                 time.sleep(10)  # Пауза между сообщениями
+                old_file['users_old'][phone_number] = ""
                 break  # Выход из цикла при успешной отправке
             else:
                 logger.warning(f"Не найдены пользователи по номеру телефона: {phone_number}")
+                old_file['users_old'][phone_number] = ""
                 break  # Выход из цикла, так как пользователь не найден
         except PeerFloodError as e:
             logger.error(f"Возникла ошибка PeerFloodError: {e}. Приостановка отправки сообщений на некоторое время.")
@@ -60,12 +66,14 @@ async def send_message_to_user(phone_number, message):
             logger.error(f"Возникла ошибка FloodWaitError: {e}. Пауза на {e.seconds} секунд перед повторной попыткой.")
             time.sleep(e.seconds + 1)  # Добавляем 1 секунду к времени ожидания перед следующей попыткой
 
-
 # Основная функция
 async def main():
     async with client:
         for phone_number, individual_message in users.items():
-            await send_message_to_user(phone_number, message)
+            if phone_number in users_old.keys():
+                continue
+            else:
+                await send_message_to_user(phone_number, message)
 
 if __name__ == '__main__':
     # Запуск клиента Telegram с указанным номером телефона
