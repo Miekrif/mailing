@@ -83,7 +83,7 @@ async def write_new_old_numbers(old_numbers):
 async def main():
     async with client:
         for phone_number, individual_message in users.get('users', '').items():
-            if phone_number in users_old.keys():
+            if phone_number in users_old['users_old'].keys():
                 continue
             else:
                 await send_message_to_user(phone_number, message)
