@@ -44,7 +44,7 @@ async def send_message_to_user(phone_number, message):
                 user_id = result.users[0].id
                 await client.send_message(user_id, message)
                 logger.info(f"Сообщение отправлено на {phone_number}")
-                time.sleep(10)  # Пауза между сообщениями
+                time.sleep(60)  # Пауза между сообщениями
                 users_old['users_old'][phone_number] = ""
                 await write_new_old_numbers(users_old)
                 break  # Выход из цикла при успешной отправке
