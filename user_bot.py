@@ -52,11 +52,13 @@ async def send_message_to_user(phone_number, message):
                 await client.send_message(user_id, message)
                 logger.info(f"Сообщение отправлено на {phone_number}")
                 time.sleep(10)  # Пауза между сообщениями
-                old_file['users_old'][phone_number] = ""
+                users_old['users_old'][phone_number] = ""
+                write_new_old_numbers(users_old)
                 break  # Выход из цикла при успешной отправке
             else:
                 logger.warning(f"Не найдены пользователи по номеру телефона: {phone_number}")
-                old_file['users_old'][phone_number] = ""
+                users_old['users_old'][phone_number] = ""
+                write_new_old_numbers(users_old)
                 break  # Выход из цикла, так как пользователь не найден
         except PeerFloodError as e:
             logger.error(f"Возникла ошибка PeerFloodError: {e}. Приостановка отправки сообщений на некоторое время.")
@@ -66,6 +68,23 @@ async def send_message_to_user(phone_number, message):
             logger.error(f"Возникла ошибка FloodWaitError: {e}. Пауза на {e.seconds} секунд перед повторной попыткой.")
             time.sleep(e.seconds + 1)  # Добавляем 1 секунду к времени ожидания перед следующей попыткой
 
+
+def write_new_old_numbers(old_numbers):
+    try:
+        old_numbers_update = open("old.numbers.json", "w")
+        if isinstance(dict, old_numbers):
+            old_numbers_update.write(json.dumps(old_numbers))
+        else: #list
+            print('2')
+            new_dict = {}
+            new_dict["users"] = dict.fromkeys(old_numbers , '')
+            old_numbers_update.write(json.dumps(new_dict))
+        old_numbers_update.close()
+    except Exception as e:
+        logger.error(e)
+    else:
+        old_numbers_update.close()
+
 # Основная функция
 async def main():
     async with client:
@@ -74,6 +93,7 @@ async def main():
                 continue
             else:
                 await send_message_to_user(phone_number, message)
+
 
 if __name__ == '__main__':
     # Запуск клиента Telegram с указанным номером телефона
