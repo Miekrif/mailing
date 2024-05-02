@@ -18,7 +18,7 @@ api_id = os.getenv('api_id')
 api_hash = os.getenv('api_hash')
 
 # Загрузка пользователей из JSON-файла
-with open("users.json", "r") as old_file:
+with open("old.numbers.json", "r") as old_file:
     users_old = json.load(old_file)
 
 with open("new_file.json", "r") as read_file:
