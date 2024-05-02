@@ -46,12 +46,12 @@ async def send_message_to_user(phone_number, message):
                 logger.info(f"Сообщение отправлено на {phone_number}")
                 time.sleep(10)  # Пауза между сообщениями
                 users_old['users_old'][phone_number] = ""
-                write_new_old_numbers(users_old)
+                await write_new_old_numbers(users_old)
                 break  # Выход из цикла при успешной отправке
             else:
                 logger.warning(f"Не найдены пользователи по номеру телефона: {phone_number}")
                 users_old['users_old'][phone_number] = ""
-                write_new_old_numbers(users_old)
+                await write_new_old_numbers(users_old)
                 break  # Выход из цикла, так как пользователь не найден
         except PeerFloodError as e:
             logger.error(f"Возникла ошибка PeerFloodError: {e}. Приостановка отправки сообщений на некоторое время.")
@@ -62,7 +62,7 @@ async def send_message_to_user(phone_number, message):
             time.sleep(e.seconds + 1)  # Добавляем 1 секунду к времени ожидания перед следующей попыткой
 
 
-def write_new_old_numbers(old_numbers):
+async def write_new_old_numbers(old_numbers):
     try:
         old_numbers_update = open("old.numbers.json", "w")
         if isinstance(dict, old_numbers):
